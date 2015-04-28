@@ -1,0 +1,42 @@
+{
+  "name": "qize",
+  "version": "1.0.0",
+  "author": {
+    "name": "Marc Riegel",
+    "email": "mail@mrcrgl.de"
+  },
+  "description": "Converts asynchronous functions to Q promises",
+  "engines": {
+    "node": ">=0.10 <=0.12"
+  },
+  "keywords": [
+    "Q",
+    "converter",
+    "function",
+    "promise"
+  ],
+  "main": "lib/qize.js",
+  "scripts": {
+    "test": "./node_modules/.bin/grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrcrgl/node-qize"
+  },
+  "bugs": {
+    "url": "https://github.com/mrcrgl/node-qize/issues"
+  },
+  "devDependencies": {
+    "chai": "2.x",
+    "mocha": "2.x",
+    "grunt": "0.x",
+    "grunt-cli": "0.x",
+    "grunt-contrib-jshint": "0.x",
+    "grunt-mocha-test": "0.x",
+    "jshint-stylish": "1.x"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "q": "^1.3.0"
+  }
+}
