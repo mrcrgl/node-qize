@@ -2,54 +2,62 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-    qize = require('../');
+    qize = require('../'),
+    Q = require('q');
 
+describe('qize.getPromise', function () {
+    var myTestFunction = function (a, b, c, callback) {
+        setTimeout(function () {
+            callback(null, a + b + c);
+        }, 10);
+    };
 
-describe.skip('qize.getPromise', function () {
+    var divide = function (a, b, callback) {
+        setTimeout(function () {
+            callback(null, a / b);
+        }, 10);
+    };
 
-    it('copied values match deeply', function (done) {
-        var copy = copyObject(sourceObj);
+    it('returns a new function', function (done) {
+        var myPromised = qize.getPromised(myTestFunction);
 
-        Object.keys(sourceObj).forEach(function (key) {
-            expect(sourceObj[key]).is.deep.equal(copy[key]);
+        expect(myPromised).to.be.an('function');
+        done();
+    });
+
+    it('throws an error on false arguments', function (done) {
+        var doIt = function () {
+            qize.getPromised('foobar');
+        };
+
+        expect(doIt).to.throw(Error, /Argument/);
+        done();
+    });
+
+    it('handles gracefully promise results', function (done) {
+        var myPromised = qize.getPromised(myTestFunction);
+
+        myPromised(5, 3, 6).then(function (sum) {
+            expect(sum).to.be.deep.equal(14);
+            done();
+        }).fail(function (err) {
+            expect(err).to.be.null;
+            done();
         });
 
-        done();
     });
 
-    it('copied object !== source', function (done) {
-        var copy = copyObject(sourceObj);
+    it('handles errors', function (done) {
+        var dividePromised = qize.getPromised(divide);
 
-        expect(copy !== sourceObj).equal(true);
+        dividePromised(0, 1).then(function (division) {
+            expect(division).to.be.undefined;
+            done();
+        }).fail(function (err) {
+            expect(err).to.be.an('object');
+            done();
+        });
 
-        done();
-    });
-
-    it('copied object === previously created object', function (done) {
-        var copy = {},
-            response = copyObject(sourceObj, copy);
-
-        expect(copy).is.deep.equal(response);
-        expect(copy === response).equal(true);
-
-        done();
-    });
-
-    it('copies only parts of source', function (done) {
-        var response = copyObject(sourceObj, {}, ['a']);
-
-        expect(response).is.deep.equal({ a: 1 });
-
-        done();
-    });
-
-    it('extends existing destination object', function (done) {
-        var destination = { v: 12, w: 15 },
-            response = copyObject(sourceObj, destination, ['a']);
-
-        expect(response).is.deep.equal({ a: 1, v: 12, w: 15 });
-
-        done();
     });
 
 });
