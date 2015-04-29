@@ -2,8 +2,7 @@
 
 var chai = require('chai'),
     expect = chai.expect,
-    qize = require('../'),
-    Q = require('q');
+    qize = require('../');
 
 describe('qize.getPromise', function () {
     var myTestFunction = function (a, b, c, callback) {
@@ -38,7 +37,7 @@ describe('qize.getPromise', function () {
         var myPromised = qize.getPromised(myTestFunction);
 
         myPromised(5, 3, 6).then(function (sum) {
-            expect(sum).to.be.deep.equal(14);
+            expect(sum).to.be.equal(14);
             done();
         }).fail(function (err) {
             expect(err).to.be.null;
@@ -58,6 +57,30 @@ describe('qize.getPromise', function () {
             done();
         });
 
+    });
+
+    it('works fine with prototype methods', function (done) {
+        var TestClass = function () {
+            this._private = 5;
+        };
+        TestClass.prototype = Object.create({});
+        TestClass.prototype.someAsync = function (num, callback) {
+            var result = num + this._private;
+            setTimeout(function () {
+                callback(null, result);
+            }, 10);
+        };
+        TestClass.prototype.someAsyncPromised = qize.getPromised(TestClass.prototype.someAsync);
+
+        var test = new TestClass();
+
+        test.someAsyncPromised(6).then(function (sum) {
+            expect(sum).to.be.equal(11);
+            done();
+        }).fail(function (err) {
+            expect(err).to.be.null;
+            done();
+        });
     });
 
 });
